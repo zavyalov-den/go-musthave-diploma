@@ -5,14 +5,15 @@ import (
 	"github.com/zavyalov-den/go-musthave-diploma/internal/handlers"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/middlewares"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/storage"
+	"log"
 	"net/http"
 )
 
 func main() {
 	r := mux.NewRouter()
 
-	// todo
-	db := &storage.Storage{}
+	db := storage.NewStorage()
+	db.InitDB()
 
 	r.Use(middlewares.GzipHandle)
 
@@ -24,5 +25,7 @@ func main() {
 	r.HandleFunc("/api/user/balance", nil)
 
 	http.Handle("/", r)
+
+	log.Fatal(http.ListenAndServe(":8088", r))
 
 }
