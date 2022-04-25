@@ -17,12 +17,15 @@ func main() {
 
 	r.Use(middlewares.GzipHandle)
 
-	r.HandleFunc("/api/user/register", handlers.Register(db))
-	r.HandleFunc("/api/user/login", handlers.Login(db))
-	r.HandleFunc("/api/user/orders", nil)
-	r.HandleFunc("/api/user/balance/withdrawals", nil)
-	r.HandleFunc("/api/user/balance/withdraw", nil)
-	r.HandleFunc("/api/user/balance", nil)
+	r.HandleFunc("/api/user/register", handlers.Register(db)).Methods(http.MethodPost)
+	r.HandleFunc("/api/user/login", handlers.Login(db)).Methods(http.MethodPost)
+
+	//r.Use(middlewares.Auth) todo
+
+	r.HandleFunc("/api/user/orders", handlers.Orders(db)).Methods(http.MethodPost)
+	r.HandleFunc("/api/user/balance/withdrawals", handlers.Withdrawals(db)).Methods(http.MethodGet)
+	r.HandleFunc("/api/user/balance/withdraw", handlers.Withdraw(db)).Methods(http.MethodPost)
+	r.HandleFunc("/api/user/balance", handlers.Balance(db)).Methods(http.MethodGet)
 
 	http.Handle("/", r)
 
