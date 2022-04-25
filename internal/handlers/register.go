@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/entities"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/storage"
 	"golang.org/x/crypto/bcrypt"
@@ -37,15 +36,26 @@ func Register(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		cred.Password = string(hash)
-
-		fmt.Println(cred)
-
-		err = db.Register(ctx, cred)
+		err = db.Register(ctx, &entities.Credentials{
+			Login:    cred.Login,
+			Password: string(hash),
+		})
 		if err != nil {
 			http.Error(w, "failed to create a user: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
+		//
+		resp, err := json.Marshal(cred)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		_, err = w.Write(resp)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }

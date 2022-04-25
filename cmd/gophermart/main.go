@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/zavyalov-den/go-musthave-diploma/internal/config"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/handlers"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/middlewares"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/storage"
@@ -29,6 +30,6 @@ func main() {
 
 	http.Handle("/", r)
 
-	log.Fatal(http.ListenAndServe(":8088", r))
+	log.Fatal(http.ListenAndServe(config.GetConfig().RunAddress, r))
 
 }

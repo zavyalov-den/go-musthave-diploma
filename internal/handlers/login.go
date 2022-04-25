@@ -30,7 +30,7 @@ func Login(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		user, err := db.GetUser(context.Background(), reqData.Username)
+		user, err := db.GetUser(context.Background(), reqData.Login)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
@@ -42,7 +42,7 @@ func Login(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"username": reqData.Username})
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"username": reqData.Login})
 		sessionKey := config.GetConfig().SessionKey
 
 		tokenString, err := token.SignedString([]byte(sessionKey))

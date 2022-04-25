@@ -28,12 +28,12 @@ func NewStorage() *Storage {
 
 }
 
-func (s *Storage) Register(ctx context.Context, cred entities.Credentials) error {
+func (s *Storage) Register(ctx context.Context, cred *entities.Credentials) error {
 	// language=sql
 	query := `
-		INSERT INTO users(username, password) VALUES ($1, $2);
+		INSERT INTO users(login, password) VALUES ($1, $2);
 	`
-	res, err := s.db.Exec(ctx, query, cred.Username, cred.Password)
+	res, err := s.db.Exec(ctx, query, cred.Login, cred.Password)
 	if err != nil {
 		return err
 	}
@@ -49,14 +49,13 @@ func (s *Storage) GetUser(ctx context.Context, name string) (*entities.Credentia
 	var user entities.Credentials
 	// language=sql
 	query := `
-		SELECT username, password FROM users
-		WHERE username = $1
+		SELECT login, password FROM users
+		WHERE login = $1
 	`
-	err := s.db.QueryRow(ctx, query, name).Scan(&user.Username, &user.Password)
+	err := s.db.QueryRow(ctx, query, name).Scan(&user.Login, &user.Password)
 	if err != nil {
 		return nil, err
 	}
 
 	return &user, nil
-
 }

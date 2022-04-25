@@ -7,7 +7,7 @@ func (s *Storage) InitDB() {
 	var queries = []string{`
 	CREATE TABLE IF NOT EXISTS users (
 	    id serial primary key,
-	    username text not null unique,
+	    login text not null unique,
 	    password text not null
 	);
 `,
