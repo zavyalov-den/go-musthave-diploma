@@ -3,6 +3,8 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"github.com/golang-jwt/jwt"
+	"github.com/zavyalov-den/go-musthave-diploma/internal/config"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/entities"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/storage"
 	"golang.org/x/crypto/bcrypt"
@@ -52,10 +54,24 @@ func Register(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"username": cred.Login})
+		sessionKey := config.GetConfig().SessionKey
+
+		tokenString, err := token.SignedString([]byte(sessionKey))
+		if err != nil {
+			http.Error(w, "failed to sign a token: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		http.SetCookie(w, &http.Cookie{Name: "jwt", Value: tokenString})
+
+		// todo: check docs for the expected response
 		_, err = w.Write(resp)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		w.WriteHeader(http.StatusOK)
 	}
 }

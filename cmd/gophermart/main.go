@@ -23,7 +23,7 @@ func main() {
 
 	//r.Use(middlewares.Auth) todo
 
-	r.HandleFunc("/api/user/orders", handlers.Orders(db)).Methods(http.MethodPost)
+	r.HandleFunc("/api/user/orders", handlers.OrdersPost(db)).Methods(http.MethodPost)
 	r.HandleFunc("/api/user/balance/withdrawals", handlers.Withdrawals(db)).Methods(http.MethodGet)
 	r.HandleFunc("/api/user/balance/withdraw", handlers.Withdraw(db)).Methods(http.MethodPost)
 	r.HandleFunc("/api/user/balance", handlers.Balance(db)).Methods(http.MethodGet)

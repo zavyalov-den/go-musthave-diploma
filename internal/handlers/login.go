@@ -38,7 +38,7 @@ func Login(db *storage.Storage) http.HandlerFunc {
 
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(reqData.Password))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
 
