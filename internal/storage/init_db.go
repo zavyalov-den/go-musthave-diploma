@@ -15,16 +15,10 @@ func (s *Storage) InitDB() {
 	CREATE TABLE IF NOT EXISTS orders (
 	    id serial primary key,
 	    num text unique,
--- 	    user_id int references users(id)
--- 		status -- enum
+	    user_id int references users(id),
+		status text,
 	    accrual int
 	);
-`,
-		`
-	CREATE TABLE IF NOT EXISTS user_orders (
-	    user_id int references users(id),
-	    order_id int references orders(id)
-	)
 `,
 		`
 	CREATE TABLE IF NOT EXISTS withdrawals (

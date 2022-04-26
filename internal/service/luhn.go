@@ -1,35 +1,35 @@
 package service
 
-func IsValid(n int) bool {
-	return (n%10+checksum(n/10))%10 == 0
+// CalculateLuhn return the check number
+func CalculateLuhn(number int) int {
+	checkNumber := checksum(number)
+
+	if checkNumber == 0 {
+		return 0
+	}
+	return 10 - checkNumber
 }
 
-//func CalculateLuhn(n int) int {
-//	checkNum := checksum(n)
-//
-//	if checkNum == 0 {
-//		return 0
-//	}
-//
-//	return 10 - checkNum
-//}
+// Valid check number is valid or not based on Luhn algorithm
+func Valid(number int) bool {
+	return (number%10+checksum(number/10))%10 == 0
+}
 
-func checksum(n int) int {
-	var result int
+func checksum(number int) int {
+	var luhn int
 
-	for i := 0; i < n; i++ {
-		cur := n % 10
+	for i := 0; number > 0; i++ {
+		cur := number % 10
 
-		if i%2 == -0 {
-			cur *= 2
+		if i%2 == 0 { // even
+			cur = cur * 2
 			if cur > 9 {
 				cur = cur%10 + cur/10
 			}
 		}
 
-		result += cur
-		n /= 10
+		luhn += cur
+		number = number / 10
 	}
-
-	return result % 10
+	return luhn % 10
 }

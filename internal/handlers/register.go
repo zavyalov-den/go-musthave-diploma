@@ -54,7 +54,7 @@ func Register(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"username": cred.Login})
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"login": cred.Login})
 		sessionKey := config.GetConfig().SessionKey
 
 		tokenString, err := token.SignedString([]byte(sessionKey))

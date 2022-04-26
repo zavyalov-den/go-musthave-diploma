@@ -42,7 +42,7 @@ func Login(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"username": reqData.Login})
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"login": reqData.Login})
 		sessionKey := config.GetConfig().SessionKey
 
 		tokenString, err := token.SignedString([]byte(sessionKey))

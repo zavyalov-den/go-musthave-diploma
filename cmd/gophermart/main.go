@@ -16,17 +16,22 @@ func main() {
 	db := storage.NewStorage()
 	db.InitDB()
 
-	r.Use(middlewares.GzipHandle)
+	//r.Use(middlewares.GzipHandle)
 
 	r.HandleFunc("/api/user/register", handlers.Register(db)).Methods(http.MethodPost)
 	r.HandleFunc("/api/user/login", handlers.Login(db)).Methods(http.MethodPost)
 
-	//r.Use(middlewares.Auth) todo
+	br := r.PathPrefix("/api/user/balance").Subrouter()
+	or := r.PathPrefix("/api/user/orders").Subrouter()
 
-	r.HandleFunc("/api/user/orders", handlers.OrdersPost(db)).Methods(http.MethodPost)
-	r.HandleFunc("/api/user/balance/withdrawals", handlers.Withdrawals(db)).Methods(http.MethodGet)
-	r.HandleFunc("/api/user/balance/withdraw", handlers.Withdraw(db)).Methods(http.MethodPost)
-	r.HandleFunc("/api/user/balance", handlers.Balance(db)).Methods(http.MethodGet)
+	br.Use(middlewares.AuthMiddleware)
+	or.Use(middlewares.AuthMiddleware)
+
+	or.HandleFunc("", handlers.OrdersPost(db)).Methods(http.MethodPost)
+
+	br.HandleFunc("/withdrawals", handlers.Withdrawals(db)).Methods(http.MethodGet)
+	br.HandleFunc("/withdraw", handlers.Withdraw(db)).Methods(http.MethodPost)
+	br.HandleFunc("/balance", handlers.Balance(db)).Methods(http.MethodGet)
 
 	http.Handle("/", r)
 

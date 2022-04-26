@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/service"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/storage"
 	"io"
@@ -12,23 +13,31 @@ import (
 func OrdersPost(db *storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// загрузка пользователем заказа для рассчета
-		_, cancel := context.WithCancel(r.Context())
+		ctx, cancel := context.WithCancel(r.Context())
 		defer cancel()
 
 		data, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		orderNum, err := strconv.Atoi(string(data))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
-		if !service.IsValid(orderNum) {
-			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		if !service.Valid(orderNum) {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return
 		}
 
-		//db.CreateOrder(ctx, orderNum, userID)
+		// db.CreateOrder(ctx, orderNum, userID)
+		login := ctx.Value("login")
+
+		fmt.Println(login)
+
+		// return 409 conflict if order exist with another user_id
 
 		// todo: order accepted. create order
 
