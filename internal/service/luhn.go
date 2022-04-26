@@ -1,6 +1,6 @@
 package service
 
-func isValid(n int) bool {
+func IsValid(n int) bool {
 	return (n%10+checksum(n/10))%10 == 0
 }
 

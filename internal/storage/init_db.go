@@ -14,14 +14,24 @@ func (s *Storage) InitDB() {
 		`
 	CREATE TABLE IF NOT EXISTS orders (
 	    id serial primary key,
-	    num text unique
-	    
+	    num text unique,
+-- 	    user_id int references users(id)
+-- 		status -- enum
+	    accrual int
 	);
 `,
 		`
 	CREATE TABLE IF NOT EXISTS user_orders (
 	    user_id int references users(id),
 	    order_id int references orders(id)
+	)
+`,
+		`
+	CREATE TABLE IF NOT EXISTS withdrawals (
+	    id serial primary key,
+	    user_id int references users(id),
+	    order_id int references orders(id),
+	    amount int
 	)
 `}
 	for _, q := range queries {
