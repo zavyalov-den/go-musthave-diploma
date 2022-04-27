@@ -59,7 +59,7 @@ func (s *Storage) GetUser(ctx context.Context, name string) (*entities.Credentia
 	return &user, nil
 }
 
-func (s *Storage) CreateOrder(ctx context.Context, num int, userID int) error {
+func (s *Storage) CreateOrder(ctx context.Context, num string, userID int) error {
 	// language=sql
 	query := `
 		SELECT user_id from orders WHERE num = $1;

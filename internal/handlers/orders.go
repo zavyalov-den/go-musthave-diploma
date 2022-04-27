@@ -32,12 +32,14 @@ func OrdersPost(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		orderNum, err := strconv.Atoi(string(data))
+		orderNum := string(data)
+
+		orderNumInt, err := strconv.Atoi(orderNum)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if !service.Valid(orderNum) {
+		if !service.Valid(orderNumInt) {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return
 		}
