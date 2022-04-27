@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/zavyalov-den/go-musthave-diploma/internal/config"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/entities"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/service"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/storage"
@@ -44,7 +46,11 @@ func OrdersPost(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		userID := int(ctx.Value("userID").(float64))
+		userID, err := getUserID(ctx)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
 
 		err = db.CreateOrder(ctx, orderNum, userID)
 		if err != nil {
@@ -54,6 +60,11 @@ func OrdersPost(db *storage.Storage) http.HandlerFunc {
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
+		}
+		err = RequestAccrual(ctx, db, orderNum)
+		if err != nil {
+			fmt.Println(err)
+			// todo something
 		}
 
 		w.WriteHeader(http.StatusAccepted)
@@ -67,7 +78,11 @@ func OrdersGet(db *storage.Storage) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		userID := int(ctx.Value("userID").(float64))
+		userID, err := getUserID(ctx)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
 
 		orders, err := db.GetOrders(ctx, userID)
 		if err != nil {
@@ -91,4 +106,39 @@ func OrdersGet(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 	}
+}
+
+func RequestAccrual(ctx context.Context, db *storage.Storage, orderNum string) error {
+	r, err := http.Get(fmt.Sprintf("%s/api/user/orders/%s", config.GetConfig().AccrualSystemAddress, orderNum))
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	if r.StatusCode != http.StatusOK {
+		fmt.Println(r.StatusCode)
+		return err
+	}
+
+	var order entities.Order
+
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	defer r.Body.Close()
+
+	err = json.Unmarshal(data, &order)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	err = db.UpdateOrder(ctx, order)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
 }

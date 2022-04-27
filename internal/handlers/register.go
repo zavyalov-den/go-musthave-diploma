@@ -65,13 +65,10 @@ func Register(db *storage.Storage) http.HandlerFunc {
 
 		http.SetCookie(w, &http.Cookie{Name: "jwt", Value: tokenString})
 
-		// todo: check docs for the expected response
 		_, err = w.Write(resp)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		w.WriteHeader(http.StatusOK)
 	}
 }

@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/config"
@@ -119,4 +120,23 @@ func (s *Storage) GetOrders(ctx context.Context, userID int) ([]*entities.Order,
 	}
 
 	return result, nil
+}
+
+func (s *Storage) UpdateOrder(ctx context.Context, order entities.Order) error {
+	// language=sql
+	query := `
+		UPDATE orders SET status = $1, accrual = accrual + $2 WHERE num = $3
+	`
+
+	r, err := s.db.Exec(ctx, query, order.Status, order.Accrual, order.Number)
+	if err != nil {
+		return err
+	}
+
+	if r.RowsAffected() == 0 {
+		return fmt.Errorf("order does not exist")
+	}
+
+	return nil
+
 }

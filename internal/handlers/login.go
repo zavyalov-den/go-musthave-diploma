@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/config"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/entities"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/storage"
@@ -55,4 +56,12 @@ func Login(db *storage.Storage) http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 	}
+}
+
+func getUserID(ctx context.Context) (int, error) {
+	userID, ok := ctx.Value("userID").(float64)
+	if !ok {
+		return 0, fmt.Errorf("cannot get a userID")
+	}
+	return int(userID), nil
 }

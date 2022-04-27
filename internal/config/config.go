@@ -20,10 +20,11 @@ func GetConfig() *config {
 }
 
 type config struct {
-	RunAddress  string `env:"RUN_ADDRESS" envDefault:":8080"`
-	BaseURL     string `env:"BASE_URL" envDefault:"http://localhost:8080"`
-	DatabaseURI string `env:"DATABASE_URI"`
-	SessionKey  string `env:"SESSION_KEY"`
+	RunAddress           string `env:"RUN_ADDRESS" envDefault:":8080"`
+	BaseURL              string `env:"BASE_URL" envDefault:"http://localhost:8080"`
+	DatabaseURI          string `env:"DATABASE_URI"`
+	SessionKey           string `env:"SESSION_KEY"`
+	AccrualSystemAddress string `env:"ACCRUAL_SYSTEM_ADDRESS" envDefault:"http://localhost:8083"`
 }
 
 func parseConfig() *config {
@@ -36,6 +37,7 @@ func parseConfig() *config {
 	flag.StringVar(&cfg.BaseURL, "b", cfg.BaseURL, "base url")
 	flag.StringVar(&cfg.DatabaseURI, "d", cfg.DatabaseURI, "database data source name")
 	flag.StringVar(&cfg.SessionKey, "k", cfg.SessionKey, "session key")
+	flag.StringVar(&cfg.AccrualSystemAddress, "r", cfg.AccrualSystemAddress, "Accrual system address")
 
 	flag.Parse()
 

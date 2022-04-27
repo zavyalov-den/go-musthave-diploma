@@ -15,7 +15,11 @@ func BalanceGet(db *storage.Storage) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		userID := int(ctx.Value("userID").(float64))
+		userID, err := getUserID(ctx)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
 
 		fmt.Println(userID)
 
