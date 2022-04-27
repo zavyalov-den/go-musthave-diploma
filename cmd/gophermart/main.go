@@ -28,10 +28,11 @@ func main() {
 	or.Use(middlewares.AuthMiddleware)
 
 	or.HandleFunc("", handlers.OrdersPost(db)).Methods(http.MethodPost)
+	or.HandleFunc("", handlers.OrdersGet(db)).Methods(http.MethodGet)
 
 	br.HandleFunc("/withdrawals", handlers.Withdrawals(db)).Methods(http.MethodGet)
 	br.HandleFunc("/withdraw", handlers.Withdraw(db)).Methods(http.MethodPost)
-	br.HandleFunc("/balance", handlers.Balance(db)).Methods(http.MethodGet)
+	br.HandleFunc("/balance", handlers.BalanceGet(db)).Methods(http.MethodGet)
 
 	http.Handle("/", r)
 

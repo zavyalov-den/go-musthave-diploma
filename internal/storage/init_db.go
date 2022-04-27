@@ -14,10 +14,10 @@ func (s *Storage) InitDB() {
 		`
 	CREATE TABLE IF NOT EXISTS orders (
 	    id serial primary key,
-	    num text unique,
+	    num bigint unique,
 	    user_id int references users(id),
 		status text default 'NEW',
-	    accrual int,
+	    accrual int default 0,
 	    uploaded_at timestamptz default now()
 	);
 `,

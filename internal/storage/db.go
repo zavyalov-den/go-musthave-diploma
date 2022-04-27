@@ -67,7 +67,7 @@ func (s *Storage) CreateOrder(ctx context.Context, num int, userID int) error {
 
 	var storedUserID = 0
 
-	err := s.db.QueryRow(ctx, query, string(num)).Scan(&storedUserID)
+	err := s.db.QueryRow(ctx, query, num).Scan(&storedUserID)
 	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return err
 	}
@@ -82,10 +82,41 @@ func (s *Storage) CreateOrder(ctx context.Context, num int, userID int) error {
 		values ($1, $2)
 	`
 
-	_, err = s.db.Exec(ctx, query, string(num), userID)
+	_, err = s.db.Exec(ctx, query, num, userID)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (s *Storage) GetOrders(ctx context.Context, userID int) ([]*entities.Order, error) {
+	// language=sql
+	query := `
+		SELECT num, status, accrual, uploaded_at from orders
+		WHERE user_id = $1
+	`
+
+	rows, err := s.db.Query(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []*entities.Order
+
+	for rows.Next() {
+		order := &entities.Order{}
+		err = rows.Scan(&order.Number, &order.Status, &order.Accrual, &order.UploadedAt)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, order)
+	}
+
+	if len(result) == 0 {
+		return nil, entities.ErrNoContent
+	}
+
+	return result, nil
 }
