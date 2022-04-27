@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"context"
-	"fmt"
+	"errors"
+	"github.com/zavyalov-den/go-musthave-diploma/internal/entities"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/service"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/storage"
 	"io"
@@ -32,16 +33,18 @@ func OrdersPost(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		// db.CreateOrder(ctx, orderNum, userID)
-		login := ctx.Value("login")
+		userID := int(ctx.Value("userID").(float64))
 
-		fmt.Println(login)
-
-		// return 409 conflict if order exist with another user_id
-
-		// todo: order accepted. create order
+		err = db.CreateOrder(ctx, orderNum, userID)
+		if err != nil {
+			if errors.Is(err, entities.ErrUserConflict) {
+				http.Error(w, err.Error(), http.StatusConflict)
+				return
+			}
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		w.WriteHeader(http.StatusAccepted)
-
 	}
 }

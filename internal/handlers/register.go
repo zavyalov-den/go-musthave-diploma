@@ -38,7 +38,7 @@ func Register(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		err = db.Register(ctx, &entities.Credentials{
+		userID, err := db.Register(ctx, &entities.Credentials{
 			Login:    cred.Login,
 			Password: string(hash),
 		})
@@ -54,7 +54,7 @@ func Register(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"login": cred.Login})
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"userID": userID, "login": cred.Login})
 		sessionKey := config.GetConfig().SessionKey
 
 		tokenString, err := token.SignedString([]byte(sessionKey))

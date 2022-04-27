@@ -32,8 +32,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			login := claims["login"]
-			ctx := context.WithValue(r.Context(), "login", login)
+			//login := claims["login"]
+			userID := claims["userID"]
+			//ctx := context.WithValue(r.Context(), "login", login)
+			ctx := context.WithValue(r.Context(), "userID", userID)
 
 			r = r.WithContext(ctx)
 		} else {

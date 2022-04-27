@@ -16,8 +16,9 @@ func (s *Storage) InitDB() {
 	    id serial primary key,
 	    num text unique,
 	    user_id int references users(id),
-		status text,
-	    accrual int
+		status text default 'NEW',
+	    accrual int,
+	    uploaded_at timestamptz default now()
 	);
 `,
 		`
