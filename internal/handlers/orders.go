@@ -64,7 +64,8 @@ func OrdersPost(db *storage.Storage) http.HandlerFunc {
 		err = RequestAccrual(ctx, db, orderNum)
 		if err != nil {
 			fmt.Println(err)
-			// todo something
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		w.WriteHeader(http.StatusAccepted)
@@ -109,15 +110,19 @@ func OrdersGet(db *storage.Storage) http.HandlerFunc {
 }
 
 func RequestAccrual(ctx context.Context, db *storage.Storage, orderNum string) error {
-	r, err := http.Get(fmt.Sprintf("%s/api/user/orders/%s", config.GetConfig().AccrualSystemAddress, orderNum))
+	url := fmt.Sprintf("%s/api/orders/%s", config.GetConfig().AccrualSystemAddress, orderNum)
+
+	fmt.Println(url)
+
+	r, err := http.Get(url)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
-	if r.StatusCode != http.StatusOK {
-		fmt.Println(r.StatusCode)
-		return err
-	}
+	//if r.StatusCode != http.StatusOK {
+	fmt.Println(r.StatusCode)
+	//	return err
+	//}
 
 	var order entities.Order
 
@@ -128,11 +133,18 @@ func RequestAccrual(ctx context.Context, db *storage.Storage, orderNum string) e
 	}
 	defer r.Body.Close()
 
-	err = json.Unmarshal(data, &order)
+	fmt.Println("accrual data: ", string(data))
+
+	err = json.NewDecoder(r.Body).Decode(&order)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
+
+	//err = json.Unmarshal(data, &order)
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return err
+	//}
 
 	err = db.UpdateOrder(ctx, order)
 	if err != nil {

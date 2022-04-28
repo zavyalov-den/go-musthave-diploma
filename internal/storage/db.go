@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/config"
@@ -85,7 +86,13 @@ func (s *Storage) CreateOrder(ctx context.Context, num string, userID int) error
 
 	_, err = s.db.Exec(ctx, query, num, userID)
 	if err != nil {
-		return err
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			fmt.Println("order already exists", pgErr.Code, pgErr.Message)
+		} else {
+			return err
+		}
+		//if errors.Is(err, pq) //
 	}
 
 	return nil
