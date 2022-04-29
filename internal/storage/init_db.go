@@ -8,8 +8,7 @@ func (s *Storage) InitDB() {
 	CREATE TABLE IF NOT EXISTS users (
 	    id serial primary key,
 	    login text not null unique,
-	    password text not null,
-	    balance float not null default 0
+	    password text not null
 	);
 `,
 		`

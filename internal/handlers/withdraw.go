@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/entities"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/storage"
 	"io"
@@ -41,8 +42,13 @@ func Withdraw(db *storage.Storage) http.HandlerFunc {
 		//- `422` — неверный номер заказа;
 		orders, err := db.GetOrders(ctx, userID)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			if errors.Is(err, entities.ErrNoContent) {
+				w.WriteHeader(http.StatusUnprocessableEntity)
+				return
+			} else {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 
 		var orderExists bool
@@ -67,7 +73,7 @@ func Withdraw(db *storage.Storage) http.HandlerFunc {
 		}
 
 		if balance.Current-withdrawal.Sum < 0 {
-			http.Error(w, err.Error(), http.StatusPaymentRequired)
+			http.Error(w, "balance is too low", http.StatusPaymentRequired)
 			return
 		}
 
