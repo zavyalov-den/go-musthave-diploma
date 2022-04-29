@@ -18,7 +18,14 @@ type Order struct {
 	Number     string    `json:"number"`
 	Status     string    `json:"status"`
 	Accrual    int       `json:"accrual,omitempty"`
-	UploadedAt time.Time `json:"uploaded_at"`
+	UploadedAt time.Time `json:"uploaded_at,omitempty"`
+}
+
+type AccrualOrder struct {
+	Order      string    `json:"order"`
+	Status     string    `json:"status"`
+	Accrual    int       `json:"accrual,omitempty"`
+	UploadedAt time.Time `json:"uploaded_at,omitempty"`
 }
 
 type Balance struct {

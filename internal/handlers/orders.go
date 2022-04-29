@@ -124,7 +124,7 @@ func RequestAccrual(ctx context.Context, db *storage.Storage, orderNum string) e
 	//	return err
 	//}
 
-	var order entities.Order
+	var order entities.AccrualOrder
 
 	data, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -135,16 +135,16 @@ func RequestAccrual(ctx context.Context, db *storage.Storage, orderNum string) e
 
 	fmt.Println("accrual data: ", string(data))
 
-	err = json.NewDecoder(r.Body).Decode(&order)
-	if err != nil {
-		return err
-	}
-
-	//err = json.Unmarshal(data, &order)
+	//err = json.NewDecoder(r.Body).Decode(&order)
 	//if err != nil {
-	//	fmt.Println(err)
 	//	return err
 	//}
+
+	err = json.Unmarshal(data, &order)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
 
 	err = db.UpdateOrder(ctx, order)
 	if err != nil {

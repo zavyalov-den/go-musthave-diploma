@@ -130,20 +130,21 @@ func (s *Storage) GetOrders(ctx context.Context, userID int) ([]*entities.Order,
 	return result, nil
 }
 
-func (s *Storage) UpdateOrder(ctx context.Context, order entities.Order) error {
+func (s *Storage) UpdateOrder(ctx context.Context, order entities.AccrualOrder) error {
+	fmt.Println("order: ", order)
 	// language=sql
 	query := `
 		UPDATE orders SET status = $1, accrual = accrual + $2 WHERE num = $3
 	`
 
-	r, err := s.db.Exec(ctx, query, order.Status, order.Accrual, order.Number)
+	_, err := s.db.Exec(ctx, query, order.Status, order.Accrual, order.Order)
 	if err != nil {
 		return err
 	}
 
-	if r.RowsAffected() == 0 {
-		return fmt.Errorf("order does not exist")
-	}
+	//if r.RowsAffected() == 0 {
+	//	return fmt.Errorf("order does not exist")
+	//}
 
 	return nil
 
