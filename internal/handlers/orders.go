@@ -57,6 +57,9 @@ func OrdersPost(db *storage.Storage) http.HandlerFunc {
 			if errors.Is(err, entities.ErrUserConflict) {
 				http.Error(w, err.Error(), http.StatusConflict)
 				return
+			} else if errors.Is(err, entities.ErrUserConflict) {
+				http.Error(w, err.Error(), http.StatusOK)
+				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

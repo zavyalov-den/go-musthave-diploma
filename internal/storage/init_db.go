@@ -17,7 +17,7 @@ func (s *Storage) InitDB() {
 	    num text unique,
 	    user_id int references users(id),
 		status text default 'NEW',
-	    accrual int default 0,
+	    accrual float default 0,
 	    uploaded_at timestamptz default now()
 	);
 `,

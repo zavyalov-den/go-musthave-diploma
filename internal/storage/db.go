@@ -76,6 +76,9 @@ func (s *Storage) CreateOrder(ctx context.Context, num string, userID int) error
 
 	if storedUserID != 0 && storedUserID != userID {
 		return entities.ErrUserConflict
+	} else if storedUserID != 0 && storedUserID == userID {
+		return entities.ErrEntryExists
+
 	}
 
 	// language=sql
