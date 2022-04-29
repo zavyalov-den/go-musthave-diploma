@@ -32,7 +32,7 @@ func main() {
 
 	br.HandleFunc("/withdrawals", handlers.Withdrawals(db)).Methods(http.MethodGet)
 	br.HandleFunc("/withdraw", handlers.Withdraw(db)).Methods(http.MethodPost)
-	br.HandleFunc("/balance", handlers.BalanceGet(db)).Methods(http.MethodGet)
+	br.HandleFunc("", handlers.BalanceGet(db)).Methods(http.MethodGet)
 
 	http.Handle("/", r)
 

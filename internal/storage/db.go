@@ -43,6 +43,16 @@ func (s *Storage) Register(ctx context.Context, cred *entities.Credentials) (int
 		return 0, err
 	}
 
+	// language=sql
+	query = `
+		INSERT INTO balance(user_id) VALUES ($1)
+		returning id;
+	`
+	_, err = s.db.Exec(ctx, query, userID)
+	if err != nil {
+		return 0, err
+	}
+
 	return userID, nil
 }
 
@@ -59,6 +69,21 @@ func (s *Storage) GetUser(ctx context.Context, name string) (*entities.Credentia
 	}
 
 	return &user, nil
+}
+
+func (s *Storage) GetUserBalance(ctx context.Context, userID int) (*entities.Balance, error) {
+	var balance entities.Balance
+	// language=sql
+	query := `
+		SELECT current, withdrawn FROM balance
+		WHERE user_id = $1;
+	`
+	err := s.db.QueryRow(ctx, query, userID).Scan(&balance.Current, &balance.Withdrawn)
+	if err != nil {
+		return nil, err
+	}
+
+	return &balance, nil
 }
 
 func (s *Storage) CreateOrder(ctx context.Context, num string, userID int) error {

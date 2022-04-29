@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/storage"
 	"net/http"
 )
@@ -21,8 +21,23 @@ func BalanceGet(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		fmt.Println(userID)
+		balance, err := db.GetUserBalance(ctx, userID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
+		balanceData, err := json.Marshal(balance)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		_, err = w.Write(balanceData)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 

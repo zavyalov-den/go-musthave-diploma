@@ -10,7 +10,7 @@ var ErrEntryExists = errors.New("db entry is already crated")
 var ErrNoContent = errors.New("no content")
 
 type Credentials struct {
-	UserID   int
+	UserID   int    `json:"user_id"`
 	Login    string `json:"login"`
 	Password string `json:"password"`
 }

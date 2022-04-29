@@ -8,7 +8,16 @@ func (s *Storage) InitDB() {
 	CREATE TABLE IF NOT EXISTS users (
 	    id serial primary key,
 	    login text not null unique,
-	    password text not null
+	    password text not null,
+	    balance float not null default 0
+	);
+`,
+		`
+	CREATE TABLE IF NOT EXISTS balance (
+	    id serial primary key,
+	    user_id int unique references users(id),
+	    current float default 0,
+	    withdrawn float default 0
 	);
 `,
 		`
@@ -26,7 +35,7 @@ func (s *Storage) InitDB() {
 	    id serial primary key,
 	    user_id int references users(id),
 	    order_id int references orders(id),
-	    amount int
+	    amount float
 	)
 `}
 	for _, q := range queries {
