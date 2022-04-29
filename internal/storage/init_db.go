@@ -34,8 +34,9 @@ func (s *Storage) InitDB() {
 	CREATE TABLE IF NOT EXISTS withdrawals (
 	    id serial primary key,
 	    user_id int references users(id),
-	    order_id int references orders(id),
-	    amount float
+	    order_num text,
+	    sum float default 0,
+	    processed_at timestamptz default now()
 	)
 `}
 	for _, q := range queries {

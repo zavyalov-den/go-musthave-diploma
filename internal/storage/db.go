@@ -184,5 +184,41 @@ func (s *Storage) UpdateUserBalance(ctx context.Context, userID int, accrual flo
 	}
 
 	return nil
+}
 
+func (s *Storage) Withdraw(ctx context.Context, userID int, withdrawal entities.Withdrawal) error {
+	// language=sql
+	query := `
+		INSERT INTO withdrawals(user_id, order_num, sum)
+		VALUES ($1, $2, $3)
+		returning id;
+	`
+
+	tx, err := s.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	_, err = tx.Exec(ctx, query, userID, withdrawal.Order, withdrawal.Sum)
+	if err != nil {
+		return err
+	}
+
+	// language=sql
+	query = `
+		UPDATE balance SET withdrawn = withdrawn - $1 WHERE user_id = $2
+	`
+
+	_, err = tx.Exec(ctx, query, withdrawal.Sum, userID)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
