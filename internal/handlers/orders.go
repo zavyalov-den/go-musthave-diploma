@@ -64,8 +64,8 @@ func OrdersPost(db *storage.Storage) http.HandlerFunc {
 		err = RequestAccrual(ctx, db, orderNum)
 		if err != nil {
 			fmt.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			//http.Error(w, err.Error(), http.StatusInternalServerError)
+			//return
 		}
 
 		w.WriteHeader(http.StatusAccepted)
