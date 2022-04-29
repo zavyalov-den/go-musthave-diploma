@@ -55,8 +55,9 @@ func Withdraw(db *storage.Storage) http.HandlerFunc {
 		}
 
 		if !orderExists {
-			w.WriteHeader(http.StatusUnprocessableEntity)
-			return
+			// todo:
+			//w.WriteHeader(http.StatusUnprocessableEntity)
+			//return
 		}
 
 		balance, err := db.GetUserBalance(ctx, userID)
