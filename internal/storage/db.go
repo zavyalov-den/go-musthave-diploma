@@ -207,7 +207,7 @@ func (s *Storage) Withdraw(ctx context.Context, userID int, withdrawal entities.
 
 	// language=sql
 	query = `
-		UPDATE balance SET withdrawn = withdrawn - $1 WHERE user_id = $2
+		UPDATE balance SET current = current - $1, withdrawn = withdrawn + $1 WHERE user_id = $2
 	`
 
 	_, err = tx.Exec(ctx, query, withdrawal.Sum, userID)
