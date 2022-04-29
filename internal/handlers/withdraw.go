@@ -55,7 +55,7 @@ func Withdraw(db *storage.Storage) http.HandlerFunc {
 		}
 
 		if !orderExists {
-			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+			w.WriteHeader(http.StatusUnprocessableEntity)
 			return
 		}
 
