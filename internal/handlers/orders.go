@@ -64,7 +64,7 @@ func OrdersPost(db *storage.Storage) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		err = RequestAccrual(ctx, db, orderNum)
+		err = RequestAccrual(ctx, db, orderNum, userID)
 		if err != nil {
 			fmt.Println(err)
 			//http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -112,7 +112,7 @@ func OrdersGet(db *storage.Storage) http.HandlerFunc {
 	}
 }
 
-func RequestAccrual(ctx context.Context, db *storage.Storage, orderNum string) error {
+func RequestAccrual(ctx context.Context, db *storage.Storage, orderNum string, userID int) error {
 	url := fmt.Sprintf("%s/api/orders/%s", config.GetConfig().AccrualSystemAddress, orderNum)
 
 	fmt.Println(url)
@@ -136,13 +136,6 @@ func RequestAccrual(ctx context.Context, db *storage.Storage, orderNum string) e
 	}
 	defer r.Body.Close()
 
-	fmt.Println("accrual data: ", string(data))
-
-	//err = json.NewDecoder(r.Body).Decode(&order)
-	//if err != nil {
-	//	return err
-	//}
-
 	err = json.Unmarshal(data, &order)
 	if err != nil {
 		fmt.Println(err)
@@ -153,6 +146,10 @@ func RequestAccrual(ctx context.Context, db *storage.Storage, orderNum string) e
 	if err != nil {
 		fmt.Println(err)
 		return err
+	}
+
+	if order.Accrual > 0 {
+		err = db.UpdateUserBalance(ctx, userID, order.Accrual)
 	}
 
 	return nil

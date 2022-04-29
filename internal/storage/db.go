@@ -159,7 +159,6 @@ func (s *Storage) GetOrders(ctx context.Context, userID int) ([]*entities.Order,
 }
 
 func (s *Storage) UpdateOrder(ctx context.Context, order entities.AccrualOrder) error {
-	fmt.Println("order: ", order)
 	// language=sql
 	query := `
 		UPDATE orders SET status = $1, accrual = accrual + $2 WHERE num = $3
@@ -170,9 +169,19 @@ func (s *Storage) UpdateOrder(ctx context.Context, order entities.AccrualOrder) 
 		return err
 	}
 
-	//if r.RowsAffected() == 0 {
-	//	return fmt.Errorf("order does not exist")
-	//}
+	return nil
+}
+
+func (s *Storage) UpdateUserBalance(ctx context.Context, userID int, accrual float32) error {
+	// language=sql
+	query := `
+		UPDATE balance SET current = current + $1 WHERE user_id = $2
+	`
+
+	_, err := s.db.Exec(ctx, query, accrual, userID)
+	if err != nil {
+		return err
+	}
 
 	return nil
 
