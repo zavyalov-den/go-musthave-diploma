@@ -42,4 +42,4 @@ type Withdrawal struct {
 
 type contextUserID string
 
-const ContextUserID = "userID"
+const ContextUserID contextUserID = "userID"
