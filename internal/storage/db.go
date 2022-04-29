@@ -87,6 +87,7 @@ func (s *Storage) CreateOrder(ctx context.Context, num string, userID int) error
 	_, err = s.db.Exec(ctx, query, num, userID)
 	if err != nil {
 		var pgErr *pgconn.PgError
+
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
 			fmt.Println("order already exists", pgErr.Code, pgErr.Message)
 		} else {
