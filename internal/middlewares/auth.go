@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt"
 	"github.com/zavyalov-den/go-musthave-diploma/internal/config"
+	"github.com/zavyalov-den/go-musthave-diploma/internal/entities"
 	"net/http"
 )
 
@@ -32,14 +33,12 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			//login := claims["login"]
 			userID := claims["userID"]
-			//ctx := context.WithValue(r.Context(), "login", login)
-			ctx := context.WithValue(r.Context(), "userID", userID)
+			ctx := context.WithValue(r.Context(), entities.ContextUserID, userID)
 
 			r = r.WithContext(ctx)
 		} else {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
+			http.Error(w, "token is not valid", http.StatusUnauthorized)
 			return
 		}
 

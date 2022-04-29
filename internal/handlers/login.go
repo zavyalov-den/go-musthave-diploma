@@ -59,7 +59,7 @@ func Login(db *storage.Storage) http.HandlerFunc {
 }
 
 func getUserID(ctx context.Context) (int, error) {
-	userID, ok := ctx.Value("userID").(float64)
+	userID, ok := ctx.Value(entities.ContextUserID).(float64)
 	if !ok {
 		return 0, fmt.Errorf("cannot get a userID")
 	}

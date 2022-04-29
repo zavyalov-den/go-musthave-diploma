@@ -150,6 +150,9 @@ func RequestAccrual(ctx context.Context, db *storage.Storage, orderNum string, u
 
 	if order.Accrual > 0 {
 		err = db.UpdateUserBalance(ctx, userID, order.Accrual)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

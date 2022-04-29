@@ -39,3 +39,7 @@ type Withdrawal struct {
 	Sum         float32   `json:"sum"`
 	ProcessedAt time.Time `json:"processed_at"`
 }
+
+type contextUserID string
+
+const ContextUserID = "userID"
