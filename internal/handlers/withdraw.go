@@ -91,5 +91,37 @@ func Withdraw(db *storage.Storage) http.HandlerFunc {
 func Withdrawals(db *storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// получение информации о выводе средств с накопительного счета пользователем
+		ctx, cancel := context.WithCancel(r.Context())
+		defer cancel()
+
+		w.Header().Set("Content-Type", "application/json")
+
+		userID, err := getUserID(ctx)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		withdrawals, err := db.GetUserWithdrawals(ctx, userID)
+		if err != nil {
+			if errors.Is(err, entities.ErrNoContent) {
+				http.Error(w, err.Error(), http.StatusNoContent)
+				return
+			}
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		resp, err := json.Marshal(withdrawals)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		_, err = w.Write(resp)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }

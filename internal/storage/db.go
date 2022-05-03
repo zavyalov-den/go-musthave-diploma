@@ -222,3 +222,35 @@ func (s *Storage) Withdraw(ctx context.Context, userID int, withdrawal entities.
 
 	return nil
 }
+
+func (s *Storage) GetUserWithdrawals(ctx context.Context, userID int) ([]*entities.Withdrawal, error) {
+	var withdrawals []*entities.Withdrawal
+	// language=sql
+	query := `
+		SELECT order_num, sum, processed_at FROM withdrawals
+		WHERE user_id = $1;
+	`
+
+	rows, err := s.db.Query(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		withdrawal := entities.Withdrawal{}
+
+		err := rows.Scan(&withdrawal.Order, &withdrawal.Sum, &withdrawal.ProcessedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		withdrawals = append(withdrawals, &withdrawal)
+	}
+
+	if len(withdrawals) == 0 {
+		return nil, entities.ErrNoContent
+	}
+
+	return withdrawals, nil
+}
