@@ -40,10 +40,3 @@ func BalanceGet(db *storage.Storage) http.HandlerFunc {
 		}
 	}
 }
-
-//func OrdersGet(db *storage.Storage) http.HandlerFunc {
-//	return func(w http.ResponseWriter, r *http.Request) {
-//		ctx, cancel := context.WithCancel(r.Context())
-//		defer cancel()
-//
-//		w.Header().Set("Content-Type", "application/json")

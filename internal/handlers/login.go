@@ -31,7 +31,7 @@ func Login(db *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		user, err := db.GetUser(context.Background(), reqData.Login)
+		user, err := db.GetUser(r.Context(), reqData.Login)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
