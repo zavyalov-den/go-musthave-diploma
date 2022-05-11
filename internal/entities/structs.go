@@ -1,13 +1,8 @@
 package entities
 
 import (
-	"errors"
 	"time"
 )
-
-var ErrUserConflict = errors.New("requested db entry is created by different user")
-var ErrEntryExists = errors.New("db entry is already crated")
-var ErrNoContent = errors.New("no content")
 
 type Credentials struct {
 	UserID   int    `json:"user_id"`
@@ -39,7 +34,3 @@ type Withdrawal struct {
 	Sum         float32   `json:"sum"`
 	ProcessedAt time.Time `json:"processed_at"`
 }
-
-type contextUserID string
-
-const ContextUserID contextUserID = "userID"
